@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\cyclone">
+      <UniqueIdentifier>{eb277a42-b9af-432e-b7df-f55e663189f1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\Cyclone\body.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\collide_coarse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\collide_fine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\contacts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\core.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\fgen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\joints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\particle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\pcontacts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\pfgen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\plinks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\pworld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\random.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\Cyclone\world.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\cyclone\body.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\collide_coarse.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\collide_fine.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\contacts.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\core.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\cyclone.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\fgen.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\joints.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\particle.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\pcontacts.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\pfgen.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\plinks.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\precision.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\pworld.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\random.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\cyclone\world.h">
+      <Filter>Header Files\cyclone</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

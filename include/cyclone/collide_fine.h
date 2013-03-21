@@ -303,6 +303,13 @@ namespace cyclone {
             const CollisionSphere &sphere,
             CollisionData *data
             );
+
+		static unsigned boxSphereAndHalfSpace(
+			const CollisionBox &box,
+			const CollisionSphere &sphere,
+			const CollisionPlane &plane,
+			CollisionData *data
+			);
     };
 
 

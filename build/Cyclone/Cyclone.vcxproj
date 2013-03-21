@@ -10,29 +10,21 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\source\app.cpp" />
-    <ClCompile Include="..\..\source\Assignments\PuppetAssignment.cpp" />
-    <ClCompile Include="..\..\source\main.cpp" />
-    <ClCompile Include="..\..\source\timing.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\source\app.h" />
-    <ClInclude Include="..\..\source\timing.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{624D50CF-E809-4623-83A2-3535FF44A95D}</ProjectGuid>
-    <RootNamespace>Assignment1</RootNamespace>
+    <ProjectGuid>{1459A486-C504-453C-AFA7-378159465D11}</ProjectGuid>
+    <RootNamespace>Cyclone</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v100</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -47,29 +39,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\bin\</OutDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>..\..\temp\Assignment 1\DEBUG\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\lib\</OutDir>
+    <IntDir>..\..\temp\Cyclone\Debug\</IntDir>
+    <TargetName>cyclone</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ProgramDataBaseFileName>..\..\temp\Assignment 1\DEBUG\vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>cyclone_d.lib;opengl32.lib;glu32.lib;glut32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <SubSystem>Console</SubSystem>
-      <ProgramDatabaseFile>..\..\temp\Assignment 1\DEBUG/Assignment 1.pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -85,6 +68,40 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\Cyclone\body.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\collide_coarse.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\collide_fine.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\contacts.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\core.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\fgen.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\joints.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\particle.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\pcontacts.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\pfgen.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\plinks.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\pworld.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\random.cpp" />
+    <ClCompile Include="..\..\source\Cyclone\world.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\cyclone\body.h" />
+    <ClInclude Include="..\..\include\cyclone\collide_coarse.h" />
+    <ClInclude Include="..\..\include\cyclone\collide_fine.h" />
+    <ClInclude Include="..\..\include\cyclone\contacts.h" />
+    <ClInclude Include="..\..\include\cyclone\core.h" />
+    <ClInclude Include="..\..\include\cyclone\cyclone.h" />
+    <ClInclude Include="..\..\include\cyclone\fgen.h" />
+    <ClInclude Include="..\..\include\cyclone\joints.h" />
+    <ClInclude Include="..\..\include\cyclone\particle.h" />
+    <ClInclude Include="..\..\include\cyclone\pcontacts.h" />
+    <ClInclude Include="..\..\include\cyclone\pfgen.h" />
+    <ClInclude Include="..\..\include\cyclone\plinks.h" />
+    <ClInclude Include="..\..\include\cyclone\precision.h" />
+    <ClInclude Include="..\..\include\cyclone\pworld.h" />
+    <ClInclude Include="..\..\include\cyclone\random.h" />
+    <ClInclude Include="..\..\include\cyclone\world.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

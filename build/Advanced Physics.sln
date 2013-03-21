@@ -1,9 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Assignment 1", "Assignment 1\Assignment 1.vcxproj", "{624D50CF-E809-4623-83A2-3535FF44A95D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Assignment 2", "Assignment 2\Assignment 2.vcxproj", "{F56DE82C-DBF1-42D3-ACDA-1292C214FA2A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cyclone", "Cyclone\Cyclone.vcxproj", "{1459A486-C504-453C-AFA7-378159465D11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +21,10 @@ Global
 		{F56DE82C-DBF1-42D3-ACDA-1292C214FA2A}.Debug|Win32.Build.0 = Debug|Win32
 		{F56DE82C-DBF1-42D3-ACDA-1292C214FA2A}.Release|Win32.ActiveCfg = Release|Win32
 		{F56DE82C-DBF1-42D3-ACDA-1292C214FA2A}.Release|Win32.Build.0 = Release|Win32
+		{1459A486-C504-453C-AFA7-378159465D11}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1459A486-C504-453C-AFA7-378159465D11}.Debug|Win32.Build.0 = Debug|Win32
+		{1459A486-C504-453C-AFA7-378159465D11}.Release|Win32.ActiveCfg = Release|Win32
+		{1459A486-C504-453C-AFA7-378159465D11}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
