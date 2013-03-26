@@ -703,9 +703,8 @@ unsigned CollisionDetector::boxAndHalfSpace(
     return contactsUsed;
 }
 
-unsigned CollisionDetector::boxSphereAndHalfSpace(
-    const CollisionBox &box,
-	const CollisionSphere &sphere,
+unsigned CollisionDetector::eightDiceAndHalfSpace(
+    const CollisionBox &dice,
     const CollisionPlane &plane,
     CollisionData *data
     )
@@ -713,16 +712,9 @@ unsigned CollisionDetector::boxSphereAndHalfSpace(
     // Make sure we have contacts
     if (data->contactsLeft <= 0) return 0;
 
-	if (!IntersectionTests::sphereAndHalfSpace(sphere, plane))
-	{
-		printf("No sphere collision");
-		return 0;
-	}
-
     // Check for intersection
-    if (!IntersectionTests::boxAndHalfSpace(box, plane))
+    if (!IntersectionTests::boxAndHalfSpace(dice, plane))
     {
-		printf("No box collision");
         return 0;
     }
 
@@ -731,17 +723,17 @@ unsigned CollisionDetector::boxSphereAndHalfSpace(
     // or on an edge, it will be reported as four or two contact points.
 
     // Go through each combination of + and - for each half-size
-    static real mults[8][3] = {{1,1,1},{-1,1,1},{1,-1,1},{-1,-1,1},
-                               {1,1,-1},{-1,1,-1},{1,-1,-1},{-1,-1,-1}};
+    static real mults[6][3] = {{0,0,1},{0,0,-1},{1,0,0},{-1,0,0},
+	{0,1,0},{0,-1,0}};
 
     Contact* contact = data->contacts;
     unsigned contactsUsed = 0;
-    for (unsigned i = 0; i < 8; i++) {
+    for (unsigned i = 0; i < 6; i++) {
 
         // Calculate the position of each vertex
         Vector3 vertexPos(mults[i][0], mults[i][1], mults[i][2]);
-        vertexPos.componentProductUpdate(box.halfSize);
-        vertexPos = box.transform.transform(vertexPos);
+        vertexPos.componentProductUpdate(dice.halfSize);
+        vertexPos = dice.transform.transform(vertexPos);
 
         // Calculate the distance from the plane
         real vertexDistance = vertexPos * plane.direction;
@@ -761,7 +753,7 @@ unsigned CollisionDetector::boxSphereAndHalfSpace(
             contact->penetration = plane.offset - vertexDistance;
 
             // Write the appropriate data
-            contact->setBodyData(box.body, NULL,
+            contact->setBodyData(dice.body, NULL,
                 data->friction, data->restitution);
 
             // Move onto the next contact

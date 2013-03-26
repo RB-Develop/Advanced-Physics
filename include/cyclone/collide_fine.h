@@ -303,10 +303,8 @@ namespace cyclone {
             const CollisionSphere &sphere,
             CollisionData *data
             );
-
-		static unsigned boxSphereAndHalfSpace(
-			const CollisionBox &box,
-			const CollisionSphere &sphere,
+		static unsigned eightDiceAndHalfSpace(
+			const CollisionBox &dice,
 			const CollisionPlane &plane,
 			CollisionData *data
 			);
