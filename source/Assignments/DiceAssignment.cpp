@@ -32,13 +32,13 @@ NormalDice::NormalDice(real x, real y, real z, real rad)
 	sphere = new CollisionSphere();
 
 	halfSize = Vector3(rad, rad, rad);
-	sphere->radius = rad*1.4f;
+	sphere->radius = rad*1.5f;
 
 	body = new RigidBody();
 
 	body->setMass(1.0f);
 	body->setAcceleration(0.0f, -25.0f, 0.0f);
-	body->setDamping(0.9f, 0.9f);
+	body->setDamping(0.7f, 0.7f);
 
 	body->setAwake(true);
 
@@ -54,6 +54,11 @@ NormalDice::NormalDice(real x, real y, real z, real rad)
 	body->calculateDerivedData();
 
 	sphere->body = body;
+
+	sphere->body->setMass(0.1f);
+	sphere->body->setDamping(0.8f, 0.8f);
+
+	sphere->body->calculateDerivedData();
 }
 
 NormalDice::~NormalDice()
@@ -73,6 +78,7 @@ void NormalDice::render()
 	glPushMatrix();
 
 	glutWireCube(halfSize.x*2);
+	//glutSolidCube(halfSize.x*2);
 
 	glPopMatrix();
 	
@@ -82,15 +88,17 @@ void NormalDice::render()
 	glMultMatrixf( mat );
 	glPushMatrix();
 
-	glutWireSphere(NormalDice::getBoundingSphere().radius, 10, 10 );
+	//glutWireSphere(NormalDice::getBoundingSphere().radius, 10, 10 );
 
 	glPopMatrix();
 }
 
 void NormalDice::update(real duration)
-{
-	body->integrate( duration );
+{	
+	sphere->body->integrate(duration);
+	sphere->calculateInternals();
 
+	body->integrate( duration );
 	calculateInternals();
 }
 
@@ -238,7 +246,7 @@ void DiceAssignment::generateContacts()
 
 	// If the distance between the sphere and plane is equal or smaller than the distance between the box and plane,
 	// then collide with the box. Else collide with the sphere.
-	if(sphereDistance <= boxDistance)
+	if(sphereDistance <= boxDistance) 
 		cyclone::CollisionDetector::boxAndHalfSpace(*dices[0], plane, &cData);
 	else
 		cyclone::CollisionDetector::sphereAndHalfSpace(dices[0]->getBoundingSphere(), plane, &cData);	
