@@ -32,25 +32,27 @@ NormalDice::NormalDice(real x, real y, real z, real rad)
 	sphere = new CollisionSphere();
 
 	halfSize = Vector3(rad, rad, rad);
-	sphere->radius = halfSize.x;
+	sphere->radius = rad*1.4f;
 
 	body = new RigidBody();
 
-	body->setMass(0.6f);
-	body->setAcceleration(0.0f, -37.0f, 0.0f);
+	body->setMass(1.0f);
+	body->setAcceleration(0.0f, -25.0f, 0.0f);
 	body->setDamping(0.9f, 0.9f);
 
 	body->setAwake(true);
-	
+
 	cyclone::Matrix3 tensor;
-    cyclone::real coeff = 0.4f*body->getMass()*rad*rad;
-    tensor.setInertiaTensorCoeffs(coeff,coeff,coeff);
-    body->setInertiaTensor(tensor);
+	cyclone::real coeff = 0.4f*body->getMass()*rad*rad;
+	tensor.setInertiaTensorCoeffs(coeff,coeff,coeff);
+	body->setInertiaTensor(tensor);
 
 	// Set the data common to all particle types
 	body->setPosition(x, y, z);
-	body->setRotation(Vector3(10, 10, 0));
-		
+	body->setRotation(Vector3(5, 5, 0));
+
+	body->calculateDerivedData();
+
 	sphere->body = body;
 }
 
@@ -70,8 +72,17 @@ void NormalDice::render()
 	glMultMatrixf( mat );
 	glPushMatrix();
 
-	glutWireCube(halfSize.x);
-	glutWireSphere(NormalDice::getBoundingSphere().radius, 30, 30 );
+	glutWireCube(halfSize.x*2);
+
+	glPopMatrix();
+	
+	sphere->body->getGLTransform( mat );
+
+	glPushMatrix();
+	glMultMatrixf( mat );
+	glPushMatrix();
+
+	glutWireSphere(NormalDice::getBoundingSphere().radius, 10, 10 );
 
 	glPopMatrix();
 }
@@ -79,7 +90,7 @@ void NormalDice::render()
 void NormalDice::update(real duration)
 {
 	body->integrate( duration );
-	sphere->calculateInternals();
+
 	calculateInternals();
 }
 
@@ -133,7 +144,6 @@ void DiceAssignment::initGraphics()
 void DiceAssignment::reset()
 {
 	dices[0] = new NormalDice(0, 10, 0, 2);
-	first = 0;
 }
 
 const char* DiceAssignment::getTitle()
@@ -194,24 +204,45 @@ void DiceAssignment::display()
 void DiceAssignment::generateContacts()
 {
 	// Create the ground plane data
-    CollisionPlane plane;
+	CollisionPlane plane;
 
-    plane.direction = cyclone::Vector3(0,1,0);
-    plane.offset = 0;
+	plane.direction = cyclone::Vector3(0,1,0);
+	plane.offset = 0;
 
-    // Set up the collision data structure
-    cData.reset(maxContacts);
-    cData.friction = (cyclone::real)0.9;
-    cData.restitution = (cyclone::real)0.1;
-    cData.tolerance = (cyclone::real)0.1;
+	// Set up the collision data structure
+	cData.reset(maxContacts);
+	cData.friction = (cyclone::real)0.9;
+	cData.restitution = (cyclone::real)0.1;
+	cData.tolerance = (cyclone::real)0.1;
 
-	if(!IntersectionTests::sphereAndHalfSpace(dices[0]->getBoundingSphere(), plane) && IntersectionTests::boxAndHalfSpace(*dices[0], plane))
+	//CollisionDetector::boxAndHalfSpace(*dices[0], plane, &cData);
+	
+	// Work out the projected radius of the box onto the plane direction.
+	cyclone::real projectedRadius = dices[0]->halfSize.x * real_abs(plane.direction * dices[0]->getAxis(0)) +
+		dices[0]->halfSize.y * real_abs(plane.direction * dices[0]->getAxis(1)) +
+		dices[0]->halfSize.z * real_abs(plane.direction * dices[0]->getAxis(2));
+
+	// Work out how far the box is from the origin.
+	cyclone::real boxDistance = plane.direction * dices[0]->getAxis(3) - projectedRadius;
+
+	// Check for the box intersection. If no intersection, then stop further calculations.
+	if(!(boxDistance <= plane.offset))
 		return;
 
-	if(IntersectionTests::sphereAndHalfSpace(dices[0]->getBoundingSphere(), plane) && IntersectionTests::boxAndHalfSpace(*dices[0], plane))
-    {
-		CollisionDetector::boxAndHalfSpace(*dices[0], plane, &cData);
-    }
+	// Find the distance from the origin.
+	cyclone::real sphereDistance = plane.direction * dices[0]->getBoundingSphere().getAxis(3) - dices[0]->getBoundingSphere().radius;
+
+	// Check for the sphere intersection. If no intersection, then stop further calculations.
+	if(!(sphereDistance <= plane.offset))
+		return;
+
+	// If the distance between the sphere and plane is equal or smaller than the distance between the box and plane,
+	// then collide with the box. Else collide with the sphere.
+	if(sphereDistance <= boxDistance)
+		cyclone::CollisionDetector::boxAndHalfSpace(*dices[0], plane, &cData);
+	else
+		cyclone::CollisionDetector::sphereAndHalfSpace(dices[0]->getBoundingSphere(), plane, &cData);	
+		
 }
 
 void DiceAssignment::mouse(int button, int state, int x, int y)
