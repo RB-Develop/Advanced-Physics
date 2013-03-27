@@ -27,7 +27,7 @@ void Application::setView()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(60.0, (double)width/(double)height, 1.0, 500.0);
+    gluPerspective(80.0, (double)width/(double)height, 1.0, 50.0);
     glMatrixMode(GL_MODELVIEW);
 }
 
