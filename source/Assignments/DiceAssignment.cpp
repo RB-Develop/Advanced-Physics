@@ -4,6 +4,7 @@
 #include "../timing.h"
 
 #include <stdio.h>
+#include <iostream>
 
 #define MAX_DICES 2
 
@@ -31,6 +32,7 @@ public:
 		body->setDamping(0.7f, 0.7f);
 
 		body->setAwake(true);
+		body->setCanSleep(false);
 
 		cyclone::Matrix3 tensor;
 		cyclone::real coeff = 0.4f*body->getMass()*rad*rad;
@@ -115,6 +117,7 @@ public:
 		body->setDamping(0.7f, 0.7f);
 
 		body->setAwake(true);
+		body->setCanSleep(false);
 
 		cyclone::Matrix3 tensor;
 		cyclone::real coeff = 0.4f*body->getMass()*halfsize*halfsize;
@@ -176,6 +179,13 @@ class DiceAssignment : public RigidBodyApplication
 	NormalDice* dices[MAX_DICES];
 	EightSidedDice* octahedron;
 
+	RigidBody *dragPoint;
+	Joint *dragJoint;
+
+	bool dragging_Dice;
+
+	real dragDuration;
+
 	void reset()
 	{
 		dices[0]->setState(cyclone::Vector3(0,5,0),
@@ -186,6 +196,8 @@ class DiceAssignment : public RigidBodyApplication
 			cyclone::Quaternion(),
 			cyclone::Vector3(2,2,2),
 			cyclone::Vector3(0,1,0));
+
+		dragging_Dice = false;
 	}
 
 	void generateContacts()
@@ -199,6 +211,9 @@ class DiceAssignment : public RigidBodyApplication
 		cData.friction = (cyclone::real)0.9;
 		cData.restitution = (cyclone::real)0.1;
 		cData.tolerance = (cyclone::real)0.1;
+
+		if(dragJoint != NULL)
+			cData.addContacts(dragJoint->addContact(cData.contacts, cData.contactsLeft));
 
 		cyclone::CollisionDetector::eightDiceAndHalfSpace(*octahedron, plane, &cData);
 
@@ -234,8 +249,28 @@ public:
 		pauseSimulation = false;
 		dices[0] = new NormalDice(2);
 		octahedron = new EightSidedDice(2);
+		dragging_Dice = false;
+		dragJoint = NULL;
+		dragPoint = new RigidBody();
+	
+		dragPoint->setMass(3.0f);
+		dragPoint->setAcceleration(0.0f, 0.0f, 0.0f);
+		dragPoint->setDamping(0.7f, 0.7f);
+
+		dragPoint->setAwake(true);
+		dragPoint->setCanSleep(false);
+
+		dragPoint->calculateDerivedData();
+
+		dragDuration = 0;
 
 		reset();
+	}
+
+	~DiceAssignment()
+	{
+		delete octahedron;
+		delete[] *dices;
 	}
 
 	const char* getTitle()
@@ -294,51 +329,76 @@ public:
 
 		dices[0]->render();
 		octahedron->render();
+		debugRenderDragPoint();
 
 		glDisable( GL_COLOR_MATERIAL );
 		glDisable( GL_LIGHTING );
 		glDisable( GL_DEPTH_TEST );
 	}
 
-	void Select( int x, int y )
+	void debugRenderDragPoint()
 	{
-		GLuint b[100] = { 0 };
-		GLint h, v[4];
-		int id;
+		GLfloat mat[16];
+		dragPoint->getGLTransform( mat );
 
-		glSelectBuffer( 3, b );
+		glColor3f(0.0f,0.0f,1.0f);
 
-		glGetIntegerv( GL_VIEWPORT, v );
-
-		glRenderMode( GL_SELECT );
-
-		glInitNames();
-		glPushName( 0 );
-
-		glMatrixMode( GL_PROJECTION );
 		glPushMatrix();
-		glLoadIdentity();
-
-		gluPickMatrix( x, v[3] - y, 13, 13, v );
-		gluPerspective( 60.0, (double) 640 / (double) 320, 1.0, 500.0 );
-
-		glMatrixMode( GL_MODELVIEW );
-
-		glutSwapBuffers();
-
-		glMatrixMode( GL_PROJECTION );
+		glMultMatrixf(mat);
+		glutSolidSphere(2, 10, 10);
 		glPopMatrix();
+	}
 
-		h = glRenderMode( GL_RENDER );
+	Vector3 GetOGLPos(int x, int y)
+	{
+		GLint viewport[4];
+		GLdouble modelview[16];
+		GLdouble projection[16];
+		GLfloat winX, winY, winZ;
+		GLdouble posX, posY, posZ;
 
-		printf( "%i hits\n", h );
+		glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+		glGetDoublev( GL_PROJECTION_MATRIX, projection );
+		glGetIntegerv( GL_VIEWPORT, viewport );
+ 
+		winX = (float)x;
+		winY = (float)viewport[3] - (float)y;
+		glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+ 
+		gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+ 
+		return Vector3(posX, posY, posZ);
+	}
 
-		glMatrixMode( GL_MODELVIEW );
+	Vector3 ScreenPos(int x, int y, int z)
+	{
+		GLint viewport[4];
+		GLdouble modelview[16];
+		GLdouble projection[16];
+		GLfloat winX, winY, winZ;
+		GLdouble posX, posY, posZ;
+
+		glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+		glGetDoublev( GL_PROJECTION_MATRIX, projection );
+		glGetIntegerv( GL_VIEWPORT, viewport );
+ 
+		winX = (float)x;
+		winY = (float)viewport[3] - (float)y;
+		glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+ 
+		gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+ 
+		std::cout << posY << "\n";
+		return Vector3(0, posY, 0);
 	}
 
 	void mouseDrag(int x, int y)
 	{
-		RigidBodyApplication::mouseDrag(x, y);
+
+		if(dragging_Dice){
+			dragPoint->setPosition(ScreenPos(x,y));
+			dragPoint->calculateDerivedData();
+		}
 
 		// Remember the position
 		last_x = x;
@@ -347,8 +407,28 @@ public:
 	
 	void mouse(int button, int state, int x, int y)
 	{
-		Select(x, y);
-		
+		if(state==0){
+			if(CollisionDetector::boxAndPoint(*dices[0], GetOGLPos(x,y), &cData)) {
+				dragJoint = new Joint();
+				dragPoint->setPosition(GetOGLPos(x,y));
+				dragPoint->calculateDerivedData();
+				dragJoint->set(dices[0]->body, GetOGLPos(x,y), dragPoint, dragPoint->getPosition(), (real) 1);
+				dragging_Dice = true;
+			}
+			if(CollisionDetector::boxAndPoint(*octahedron, GetOGLPos(x,y), &cData)) {
+				dragJoint = new Joint();
+				dragPoint->setPosition(GetOGLPos(x,y));
+				dragPoint->calculateDerivedData();
+				dragJoint->set(octahedron->body, GetOGLPos(x,y), dragPoint, GetOGLPos(x,y), (real) 1);
+				dragging_Dice = true;
+			}
+		}
+		if(state==1){
+			dragJoint = NULL;
+			delete dragJoint;
+			dragging_Dice = false;
+		}
+
 		// Remember the position
 		last_x = x;
 		last_y = y;
