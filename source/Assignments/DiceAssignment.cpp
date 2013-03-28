@@ -7,6 +7,7 @@
 #include <iostream>
 
 #define MAX_DICES 2
+#define EXTRA 1;
 
 using namespace cyclone;
 
