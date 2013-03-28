@@ -216,26 +216,27 @@ class DiceAssignment : public RigidBodyApplication
 		if(dragging_Dice)
 			cData.addContacts(dragJoint->addContact(cData.contacts, cData.contactsLeft));
 
-		cyclone::CollisionDetector::eightDiceAndHalfSpace(*octahedron, plane, &cData);
+		CollisionDetector::eightDiceAndHalfSpace(*octahedron, plane, &cData);
+		CollisionDetector::boxAndBox(*octahedron, *dice, &cData);
 
-		cyclone::real projectedRadius = dice->halfSize.x * real_abs(plane.direction * dice->getAxis(0)) +
+		real projectedRadius = dice->halfSize.x * real_abs(plane.direction * dice->getAxis(0)) +
 			dice->halfSize.y * real_abs(plane.direction * dice->getAxis(1)) +
 			dice->halfSize.z * real_abs(plane.direction * dice->getAxis(2));
 
-		cyclone::real boxDistance = plane.direction * dice->getAxis(3) - projectedRadius;
+		real boxDistance = plane.direction * dice->getAxis(3) - projectedRadius;
 
 		if(!(boxDistance <= plane.offset))
 			return;
 
-		cyclone::real sphereDistance = plane.direction * dice->getBoundingSphere().getAxis(3) - dice->getBoundingSphere().radius;
+		real sphereDistance = plane.direction * dice->getBoundingSphere().getAxis(3) - dice->getBoundingSphere().radius;
 
 		if(!(sphereDistance <= plane.offset))
 			return;
 
 		if(sphereDistance <= boxDistance || dice->body->getRotation() < Vector3(1.0f, 1.0f, 1.0f)) 
-			cyclone::CollisionDetector::boxAndHalfSpace(*dice, plane, &cData);
+			CollisionDetector::boxAndHalfSpace(*dice, plane, &cData);
 		else
-			cyclone::CollisionDetector::sphereAndHalfSpace(dice->getBoundingSphere(), plane, &cData);
+			CollisionDetector::sphereAndHalfSpace(dice->getBoundingSphere(), plane, &cData);
 	}
 
 	void updateObjects(cyclone::real duration)
@@ -329,7 +330,6 @@ public:
 
 		dice->render();
 		octahedron->render();
-		debugRenderDragPoint();
 
 		glDisable( GL_COLOR_MATERIAL );
 		glDisable( GL_LIGHTING );
@@ -398,7 +398,6 @@ public:
 
 		if(dragging_Dice){
 			dragPoint->setPosition(screenVector);
-			dice->body->addVelocity(previousScreenVector.operator-(screenVector));
 			dragPoint->calculateDerivedData();
 		}
 
@@ -444,3 +443,5 @@ Application* getApplication()
 {
 	return new DiceAssignment();
 }
+
+// Nieuwe zooi op de branch.
