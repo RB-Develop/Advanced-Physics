@@ -444,3 +444,5 @@ Application* getApplication()
 {
 	return new DiceAssignment();
 }
+
+// Nieuwe change op master.
