@@ -27,7 +27,7 @@ public:
 
 		body = new RigidBody();
 
-		body->setMass(1.0f);
+		body->setMass(5.0f);
 		body->setAcceleration(0.0f, -30.0f, 0.0f);
 		body->setDamping(0.2f, 0.2f);
 
@@ -47,7 +47,7 @@ public:
 
 		sphere->body = body;
 
-		sphere->body->setMass(0.1f);
+		sphere->body->setMass(1.0f);
 		sphere->body->setDamping(1.01f, 1.01f);
 
 		sphere->body->calculateDerivedData();
@@ -86,20 +86,10 @@ public:
 		glScalef(halfSize.x*2, halfSize.y*2, halfSize.z*2);
 		glutSolidCube(1.0f);
 		glPopMatrix();
-
-		sphere->body->getGLTransform( mat );
-
-		glColor3f(0.4f,0.7f,0.0f);
-
-		glPushMatrix();
-		glMultMatrixf(mat);
-		glutWireSphere(sphere->radius, 10, 10);
-		glPopMatrix();
 	}
 
 	void update(real duration)
 	{	
-		//sphere->body->integrate(duration);
 		sphere->calculateInternals();
 
 		body->integrate( duration );
@@ -121,7 +111,7 @@ public:
 
 		body = new RigidBody();
 
-		body->setMass(3.0f);
+		body->setMass(6.0f);
 		body->setAcceleration(0.0f, -30.0f, 0.0f);
 		body->setDamping(0.7f, 0.7f);
 
@@ -185,19 +175,21 @@ public:
 */
 class DiceAssignment : public RigidBodyApplication
 {
-	NormalDice* dices[MAX_DICES];
+	NormalDice* dice;
 	EightSidedDice* octahedron;
 
 	RigidBody *dragPoint;
 	Joint *dragJoint;
 
-	bool dragging_Dice;
+	GLfloat zWin;
 
-	real dragDuration;
+	Vector3 previousScreenVector, screenVector;
+
+	bool dragging_Dice;
 
 	void reset()
 	{
-		dices[0]->setState(cyclone::Vector3(0,5,0),
+		dice->setState(cyclone::Vector3(0,5,0),
 			cyclone::Quaternion(),
 			cyclone::Vector3(2,2,2),
 			cyclone::Vector3(0,1,0));
@@ -226,39 +218,39 @@ class DiceAssignment : public RigidBodyApplication
 
 		cyclone::CollisionDetector::eightDiceAndHalfSpace(*octahedron, plane, &cData);
 
-		cyclone::real projectedRadius = dices[0]->halfSize.x * real_abs(plane.direction * dices[0]->getAxis(0)) +
-			dices[0]->halfSize.y * real_abs(plane.direction * dices[0]->getAxis(1)) +
-			dices[0]->halfSize.z * real_abs(plane.direction * dices[0]->getAxis(2));
+		cyclone::real projectedRadius = dice->halfSize.x * real_abs(plane.direction * dice->getAxis(0)) +
+			dice->halfSize.y * real_abs(plane.direction * dice->getAxis(1)) +
+			dice->halfSize.z * real_abs(plane.direction * dice->getAxis(2));
 
-		cyclone::real boxDistance = plane.direction * dices[0]->getAxis(3) - projectedRadius;
+		cyclone::real boxDistance = plane.direction * dice->getAxis(3) - projectedRadius;
 
 		if(!(boxDistance <= plane.offset))
 			return;
 
-		cyclone::real sphereDistance = plane.direction * dices[0]->getBoundingSphere().getAxis(3) - dices[0]->getBoundingSphere().radius;
+		cyclone::real sphereDistance = plane.direction * dice->getBoundingSphere().getAxis(3) - dice->getBoundingSphere().radius;
 
 		if(!(sphereDistance <= plane.offset))
 			return;
 
-		if(sphereDistance <= boxDistance || dices[0]->body->getRotation() < Vector3(1.0f, 1.0f, 1.0f)) 
-			cyclone::CollisionDetector::boxAndHalfSpace(*dices[0], plane, &cData);
+		if(sphereDistance <= boxDistance || dice->body->getRotation() < Vector3(1.0f, 1.0f, 1.0f)) 
+			cyclone::CollisionDetector::boxAndHalfSpace(*dice, plane, &cData);
 		else
-			cyclone::CollisionDetector::sphereAndHalfSpace(dices[0]->getBoundingSphere(), plane, &cData);
+			cyclone::CollisionDetector::sphereAndHalfSpace(dice->getBoundingSphere(), plane, &cData);
 	}
 
 	void updateObjects(cyclone::real duration)
 	{
-		dices[0]->update(duration);
+		dice->update(duration);
 		octahedron->update(duration);
 
-		dragPoint->integrate(duration);
+		//dragPoint->integrate(duration);
 	}
 
 public:
 	DiceAssignment()
 	{
 		pauseSimulation = false;
-		dices[0] = new NormalDice(2);
+		dice = new NormalDice(2);
 		octahedron = new EightSidedDice(2);
 		dragging_Dice = false;
 
@@ -266,8 +258,7 @@ public:
 
 		dragPoint = new RigidBody();
 	
-		dragPoint->setMass(10.0f);
-		dragPoint->setAcceleration(0.0f, 0.0f, 0.0f);
+		dragPoint->setMass(100.0f);
 		dragPoint->setDamping(0.0f, 0.0f);
 
 		dragPoint->setAwake(true);
@@ -275,15 +266,13 @@ public:
 
 		dragPoint->calculateDerivedData();
 
-		dragDuration = 0;
-
 		reset();
 	}
 
 	~DiceAssignment()
 	{
 		delete octahedron;
-		delete[] *dices;
+		delete dice;
 	}
 
 	const char* getTitle()
@@ -295,11 +284,9 @@ public:
 	{
 		GLfloat lightAmbient[] = {0.8f,0.8f,0.8f,1.0f};
 		GLfloat lightDiffuse[] = {0.9f,0.95f,1.0f,1.0f};
-		GLfloat lightSpecular[] = {0.9f,0.95f,1.0f,1.0f};
 
 		glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-		glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
 
 		glEnable(GL_LIGHT0);
 
@@ -308,7 +295,7 @@ public:
 
 	void display()
 	{
-		const static GLfloat lightPosition[] = {-1, 1, 0, 0};
+		const static GLfloat lightPosition[] = {-0.5f, 0.5f, 0, 0};
 
 		RigidBodyApplication::display();
 
@@ -335,12 +322,12 @@ public:
 		glEnable( GL_DEPTH_TEST );
 		glEnable( GL_LIGHTING );
 		glLightfv( GL_LIGHT0, GL_POSITION, lightPosition );
-		glColorMaterial( GL_FRONT_AND_BACK, GL_SPECULAR );
+		glColorMaterial( GL_FRONT_AND_BACK, GL_DIFFUSE );
 		glEnable( GL_COLOR_MATERIAL );
 
 		glPolygonMode( GL_FRONT_AND_BACK, GL_DIFFUSE );
 
-		dices[0]->render();
+		dice->render();
 		octahedron->render();
 		debugRenderDragPoint();
 
@@ -358,7 +345,7 @@ public:
 
 		glPushMatrix();
 		glMultMatrixf(mat);
-		glutSolidSphere(2, 10, 10);
+		glutWireCube(1.0f);
 		glPopMatrix();
 	}
 
@@ -377,6 +364,28 @@ public:
 		winX = (float)x;
 		winY = (float)viewport[3] - (float)y;
 		glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+
+		zWin = winZ;
+
+		gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+
+		return Vector3(posX, posY, posZ);
+	}
+
+	Vector3 GetOGLPos2(int x, int y, float winZ)
+	{
+		GLint viewport[4];
+		GLdouble modelview[16];
+		GLdouble projection[16];
+		GLfloat winX, winY;
+		GLdouble posX, posY, posZ;
+
+		glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+		glGetDoublev( GL_PROJECTION_MATRIX, projection );
+		glGetIntegerv( GL_VIEWPORT, viewport );
+ 
+		winX = (float)x;
+		winY = (float)viewport[3] - (float)y;
  
 		gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
 
@@ -385,34 +394,38 @@ public:
 
 	void mouseDrag(int x, int y)
 	{
+		screenVector = GetOGLPos2(x, y, zWin);
+
 		if(dragging_Dice){
-			dragPoint->setPosition(Vector3(dragPoint->getPosition().x, GetOGLPos(x,y).y, GetOGLPos(x,y).z));
+			dragPoint->setPosition(screenVector);
+			dice->body->addVelocity(previousScreenVector.operator-(screenVector));
 			dragPoint->calculateDerivedData();
 		}
 
 		// Remember the position
 		last_x = x;
 		last_y = y;
+
+		previousScreenVector = screenVector;
 	}
 	
 	void mouse(int button, int state, int x, int y)
 	{
 		if(state==GLUT_DOWN){
-			if(CollisionDetector::boxAndPoint(*dices[0], GetOGLPos(x,y), &cData)) {
-				dragPoint->setPosition(GetOGLPos(x,y));
-				dragPoint->calculateDerivedData();
-				dragJoint->set(dices[0]->body, GetOGLPos(x,y), dragPoint, GetOGLPos(x,y), (real) 1);
+			dragPoint->setPosition(GetOGLPos(x,y));
+			dragPoint->calculateDerivedData();
+
+			if(CollisionDetector::boxAndPoint(*dice, GetOGLPos(x,y), &cData)) {
+				dragJoint->set(dice->body, dice->getBoundingSphere().body->getPointInLocalSpace(GetOGLPos(x,y)), dragPoint, dragPoint->getPointInLocalSpace(GetOGLPos(x,y)), (real)0);
 				dragging_Dice = true;
 			}
 			if(CollisionDetector::boxAndPoint(*octahedron, GetOGLPos(x,y), &cData)) {
-				dragPoint->setPosition(GetOGLPos(x,y));
-				dragPoint->calculateDerivedData();
-				dragJoint->set(octahedron->body, GetOGLPos(x,y), dragPoint, GetOGLPos(x,y), (real) 1);
+				dragJoint->set(octahedron->body, octahedron->body->getPointInLocalSpace(GetOGLPos(x,y)), dragPoint, dragPoint->getPointInLocalSpace(GetOGLPos(x,y)), (real)0);
 				dragging_Dice = true;
 			}
 		}
-		if(state==1){
-			dragJoint->set(dragPoint, GetOGLPos(x,y), dragPoint, GetOGLPos(x,y), (real) 1);
+		if(state==GLUT_UP){
+			dragJoint->set(NULL, Vector3(), NULL, Vector3(), (real)0);
 			dragging_Dice = false;
 		}
 

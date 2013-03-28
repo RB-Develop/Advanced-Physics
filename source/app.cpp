@@ -27,7 +27,7 @@ void Application::setView()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(80.0, (double)width/(double)height, 1.0, 50.0);
+    gluPerspective(80.0, (double)width/(double)height, 1.0, 100.0);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -241,9 +241,9 @@ void RigidBodyApplication::display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    gluLookAt(18.0f, 0, 0,  0, 0, 0,  0, 1.0f, 0);
-    glRotatef(-phi, 0, 0, 1);
-    glRotatef(theta, 0, 1, 0);
+    gluLookAt(0.0f, 15.0f, 30.0f,  0, 5.0f, 0,  0, 1.0f, 0);
+    //glRotatef(-phi, 0, 0, 1);
+    //glRotatef(theta, 0, 1, 0);
     glTranslatef(0, -5.0f, 0);
 }
 

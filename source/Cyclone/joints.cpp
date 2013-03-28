@@ -36,6 +36,8 @@ unsigned Joint::addContact(Contact *contact, unsigned limit) const
         contact->penetration = length-error;
         contact->friction = 1.0f;
         contact->restitution = 0;
+
+		body[0]->addVelocity(a_to_b*3);
         return 1;
     }
 
