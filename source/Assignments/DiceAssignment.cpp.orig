@@ -5,9 +5,13 @@
 
 #include <stdio.h>
 #include <iostream>
+<<<<<<< HEAD
 
 #define MAX_DICES 2
+#define EXTRA 1;
 
+=======
+>>>>>>> Define verwijdert
 using namespace cyclone;
 
 /*
@@ -445,9 +449,7 @@ Application* getApplication()
 }
 
 
-<<<<<<< HEAD
-
-// YAAAAAAAYYYY
-=======
 // WHEEEEEEEEEEEEEEEE
->>>>>>> Branch verandering
+// YAAAAAAAYYYY
+
+// Meer changes in de branch.
