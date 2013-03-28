@@ -444,5 +444,10 @@ Application* getApplication()
 	return new DiceAssignment();
 }
 
+<<<<<<< HEAD
 // Nieuwe zooi op de branch.
 // Nieuwe change op master.
+// Nieuwe zooi op de branch.
+=======
+// Nieuwe change op master.
+>>>>>>> master
