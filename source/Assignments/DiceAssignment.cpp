@@ -443,6 +443,3 @@ Application* getApplication()
 {
 	return new DiceAssignment();
 }
-
-// Nieuwe zooi op de branch.
-// Nieuwe change op master.
